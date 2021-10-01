@@ -9,7 +9,7 @@ var options = {
     'content-type': 'application/x-www-form-urlencoded',
     'sec-ch-ua-mobile': '?0',
     'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.82 Safari/537.36',
-    'x-storageapi-token': '395-17125-VZU9l3T852Owns0LY9JoycL8tF3XkdRwx9q8EXmc',
+    'x-storageapi-token': 'process.env.KEBOOLA_TOKEN',
     'sec-ch-ua-platform': '"Windows"',
     'accept': '*/*',
     'origin': 'https://connection.eu-central-1.keboola.com',

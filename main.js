@@ -1,67 +1,36 @@
-const Apify = require('apify')
-const { gotScraping } = require('got-scraping')
+import Apify from 'apify';
+import fs from 'fs';
 
-const shopName = 'shop_cz'
+import { config } from 'dotenv';
+import * as lib from './lib.js';
+
+config();
+
+const shopName = 'aab';
 
 Apify.main(async () => {
-    const url =
-        'https://connection.eu-central-1.keboola.com/v2/storage/components/keboola.snowflake-transformation/configs'
-    const method = 'POST'
-    const formData = {
-                name: `${shopName}_clean`,
-                description: 'In this transformation the data gets unified and deduped',
-                configuration: JSON.stringify({
-                    parameters:{
-                        blocks:[
-                           {
-                              name:"righto",
-                              codes:[
-                                 {
-                                    name:"cleaner",
-                                    script:[
-                                       `CREATE TABLE "final" AS SELECT * FROM "shop_all"`
-                                    ]
-                                 }
-                              ]
-                           }
-                        ]
-                     },
-                     storage:{
-                        input:{
-                           tables:[
-                              {
-                                 source:`in.c-black-friday.${shopName}`,
-                                 destination:"shop_all",
-                              }
-                           ]
-                        },
-                        output:{
-                           tables:[
-                              {
-                                 destination:`out.c-0-${shopName}.${shopName}`,
-                                 source:"finally",
-                                 primary_key:[
-                                    "p_key"
-                                 ]
-                              }
-                           ]
-                        }
-                     },
-                }),
-            }
-    const headers = {
-        'content-type': 'application/x-www-form-urlencoded',
-        'x-storageapi-token':
-            '395-17125-VZU9l3T852Owns0LY9JoycL8tF3XkdRwx9q8EXmc'
-    }
+    console.log(process.env.KEBOOLA_TOKEN);
 
-    const { body } = await gotScraping({
-        useHeaderGenerator: false,
-        url,
-        method,
-        headers,
-        form: formData
-    })
+    const id1 = await lib.getOrCreateTransformation(shopName, '_01_unification');
+    const id2 = await lib.getOrCreateTransformation(shopName, '_02_enriched');
+    const id3 = await lib.getOrCreateTransformation(shopName, '_03_upload');
 
-    console.dir(JSON.parse(body))
-})
+    await lib.updateTransformation(
+        id1,
+        `in.c-black-friday.${shopName}`,
+        `out.c-0-${shopName}.${shopName}_unified`,
+        fs.readFileSync('./01_unification.sql', 'utf-8'),
+    );
+    await lib.updateTransformation(
+        id2,
+        `out.c-0-${shopName}.${shopName}_unified`,
+        `out.c-0-${shopName}.${shopName}_enriched`,
+        `TODO`,
+    );
+    await lib.updateTransformation(
+        id3,
+        `out.c-0-${shopName}.${shopName}_enriched`,
+        `out.c-0-${shopName}.${shopName}_connected`,
+        `TODO`,
+    );
+});
