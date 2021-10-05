@@ -3,10 +3,10 @@
     "type": "object",
     "schemaVersion": 1,
     "properties": {
-        "test": {
+        "shopName": {
             "title": "Shop name",
             "type": "array",
-            "description": "With countr suffix.",
+            "description": "With country suffix.",
             "editor": "stringList"
         }
     },
