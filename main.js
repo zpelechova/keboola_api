@@ -6,6 +6,7 @@ config();
 Apify.main(async () => {
     const shopName = await Apify.getInput();
 
+    
     const getUrl =
         'https://connection.eu-central-1.keboola.com/v2/storage/components/transformation/configs'
     const getMethod = 'GET'
